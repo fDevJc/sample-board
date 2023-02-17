@@ -24,8 +24,11 @@ public class Post extends BaseEntity {
 	private Account writer;
 
 	private LocalDateTime deletedDate;
+
 	@Enumerated(value = EnumType.STRING)
 	private PostStatus postStatus;
+
+	private int likeCount;
 
 	private Post(Account writer, String title, String content, PostStatus postStatus) {
 		this.writer = writer;
@@ -50,5 +53,13 @@ public class Post extends BaseEntity {
 	public void deletePost() {
 		this.postStatus = PostStatus.DELETE;
 		this.deletedDate = LocalDateTime.now();
+	}
+
+	public void plusLikeCount() {
+		likeCount++;
+	}
+
+	public void minusLikeCount() {
+		likeCount--;
 	}
 }

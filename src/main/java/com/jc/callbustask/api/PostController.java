@@ -2,7 +2,6 @@ package com.jc.callbustask.api;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,11 +20,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 public class PostController {
 	private final PostService postService;
-
-	@GetMapping("/api/v1/check")
-	public void check() {
-		System.out.println("check");
-	}
 
 	@Authority
 	@PostMapping("/api/v1/posts")
@@ -53,5 +47,23 @@ public class PostController {
 	) {
 		String accountId = AuthenticationContextHolder.CONTEXT.get();
 		postService.deletePost(accountId, postId);
+	}
+
+	@Authority
+	@PostMapping("/api/v1/posts/{postId}/likes")
+	public void likePost(
+		@PathVariable final long postId
+	) {
+		String accountId = AuthenticationContextHolder.CONTEXT.get();
+		postService.likePost(accountId, postId);
+	}
+
+	@Authority
+	@DeleteMapping("/api/v1/posts/{postId}/likes")
+	public void unLikePost(
+		@PathVariable final long postId
+	) {
+		String accountId = AuthenticationContextHolder.CONTEXT.get();
+		postService.unLikePost(accountId, postId);
 	}
 }
