@@ -11,7 +11,7 @@ import com.jc.callbustask.dto.request.AddPostRequest;
 import com.jc.callbustask.dto.request.ModifyPostRequest;
 import com.jc.callbustask.service.exception.NotFoundAccountException;
 import com.jc.callbustask.service.exception.NotFoundPostException;
-import com.jc.callbustask.service.exception.PostModificationException;
+import com.jc.callbustask.service.exception.PostAuthorityException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +39,19 @@ public class PostService {
 		if (post.isWriter(accountId)) {
 			post.updatePost(request.getTitle(), request.getContent());
 		} else {
-			throw new PostModificationException(accountId);
+			throw new PostAuthorityException(accountId);
+		}
+	}
+
+	@Transactional
+	public void deletePost(final String accountId, final long postId) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new NotFoundPostException(postId));
+
+		if (post.isWriter(accountId)) {
+			post.deletePost();
+		} else {
+			throw new PostAuthorityException(accountId);
 		}
 	}
 }
