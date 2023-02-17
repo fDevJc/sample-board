@@ -1,6 +1,7 @@
 package com.jc.callbustask.api;
 
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,5 +44,14 @@ public class PostController {
 	) {
 		String accountId = AuthenticationContextHolder.CONTEXT.get();
 		postService.modifyPost(accountId, postId, request);
+	}
+
+	@Authority
+	@DeleteMapping("/api/v1/posts/{postId}")
+	public void deletePost(
+		@PathVariable final long postId
+	) {
+		String accountId = AuthenticationContextHolder.CONTEXT.get();
+		postService.deletePost(accountId, postId);
 	}
 }

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.jc.callbustask.config.auth.exception.InvalidMemberTypeAccessException;
-import com.jc.callbustask.service.exception.PostModificationException;
+import com.jc.callbustask.service.exception.PostAuthorityException;
 
 @RestControllerAdvice
 public class PostControllerAdvice {
@@ -16,8 +16,8 @@ public class PostControllerAdvice {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 	}
 
-	@ExceptionHandler(PostModificationException.class)
-	public ResponseEntity postModificationException(PostModificationException e) {
+	@ExceptionHandler(PostAuthorityException.class)
+	public ResponseEntity postModificationException(PostAuthorityException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 	}
 }
