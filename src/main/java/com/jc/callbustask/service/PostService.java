@@ -1,5 +1,8 @@
 package com.jc.callbustask.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +14,7 @@ import com.jc.callbustask.domain.repository.LikeRepository;
 import com.jc.callbustask.domain.repository.PostRepository;
 import com.jc.callbustask.dto.request.AddPostRequest;
 import com.jc.callbustask.dto.request.ModifyPostRequest;
+import com.jc.callbustask.dto.response.PostResponse;
 import com.jc.callbustask.service.exception.NotFoundAccountException;
 import com.jc.callbustask.service.exception.NotFoundPostException;
 import com.jc.callbustask.service.exception.PostAuthorityException;
@@ -18,13 +22,13 @@ import com.jc.callbustask.service.exception.PostAuthorityException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class PostService {
 	private final PostRepository postRepository;
 	private final AccountRepository accountRepository;
 	private final LikeRepository likeRepository;
 
-	@Transactional
 	public Long addPost(final String accountId, final AddPostRequest addPostRequest) {
 
 		Account writer = accountRepository.findByAccountId(accountId)
@@ -34,7 +38,6 @@ public class PostService {
 		return postRepository.save(post).getId();
 	}
 
-	@Transactional
 	public void modifyPost(final String accountId, final long postId, final ModifyPostRequest request) {
 
 		Post post = postRepository.findById(postId)
@@ -47,7 +50,6 @@ public class PostService {
 		}
 	}
 
-	@Transactional
 	public void deletePost(final String accountId, final long postId) {
 
 		Post post = postRepository.findById(postId)
@@ -65,8 +67,6 @@ public class PostService {
 	 * likePost와 unLikePost 로직이 비슷한 부분이 많음
 	 * 굳이 메소드를 나누는게 좋을지 고민 후 리팩토링
 	 */
-
-	@Transactional
 	public void likePost(final String accountId, final long postId) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new NotFoundPostException(postId));
@@ -86,7 +86,6 @@ public class PostService {
 
 	}
 
-	@Transactional
 	public void unLikePost(final String accountId, final long postId) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new NotFoundPostException(postId));
@@ -100,5 +99,10 @@ public class PostService {
 			.orElseThrow(() -> new RuntimeException());
 
 		likeRepository.delete(like);
+	}
+
+	@Transactional(readOnly = true)
+	public List<PostResponse> findAllPosts(String accountId, Pageable page) {
+		return postRepository.findAllPosts(accountId, page);
 	}
 }
