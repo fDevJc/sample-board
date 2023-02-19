@@ -6,7 +6,4 @@ import com.jc.callbustask.config.auth.annotation.Authority;
 
 public interface AuthenticationStrategy {
 	Boolean isCertified(HttpServletRequest request, Authority authority);
-
-	void setContext(HttpServletRequest request);
-	void removeContext();
 }

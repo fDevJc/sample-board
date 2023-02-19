@@ -14,10 +14,12 @@ import com.jc.callbustask.domain.repository.LikeRepository;
 import com.jc.callbustask.domain.repository.PostRepository;
 import com.jc.callbustask.dto.request.AddPostRequest;
 import com.jc.callbustask.dto.request.ModifyPostRequest;
-import com.jc.callbustask.dto.response.PostResponse;
+import com.jc.callbustask.dto.response.PostDto;
 import com.jc.callbustask.service.exception.NotFoundAccountException;
+import com.jc.callbustask.service.exception.NotFoundLikeException;
 import com.jc.callbustask.service.exception.NotFoundPostException;
 import com.jc.callbustask.service.exception.PostAuthorityException;
+import com.jc.callbustask.service.exception.PostLikeCountExceedException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,36 +40,33 @@ public class PostService {
 		return postRepository.save(post).getId();
 	}
 
-	public void modifyPost(final String accountId, final long postId, final ModifyPostRequest request) {
+	public Long modifyPost(final String accountId, final long postId, final ModifyPostRequest request) {
 
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new NotFoundPostException(postId));
 
 		if (post.isWriter(accountId)) {
 			post.updatePost(request.getTitle(), request.getContent());
+			return post.getId();
 		} else {
 			throw new PostAuthorityException(accountId);
 		}
 	}
 
-	public void deletePost(final String accountId, final long postId) {
+	public Long deletePost(final String accountId, final long postId) {
 
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new NotFoundPostException(postId));
 
 		if (post.isWriter(accountId)) {
 			post.deletePost();
+			return post.getId();
 		} else {
 			throw new PostAuthorityException(accountId);
 		}
 	}
 
-	/*
-	 * todo
-	 * likePost와 unLikePost 로직이 비슷한 부분이 많음
-	 * 굳이 메소드를 나누는게 좋을지 고민 후 리팩토링
-	 */
-	public void likePost(final String accountId, final long postId) {
+	public Long likePost(final String accountId, final long postId) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new NotFoundPostException(postId));
 
@@ -77,16 +76,15 @@ public class PostService {
 			.orElseThrow(() -> new NotFoundAccountException(accountId));
 
 		if (likeRepository.findByAccountAndPost(account, post).isPresent()) {
-			throw new RuntimeException();
+			throw new PostLikeCountExceedException(accountId, postId);
 		}
 
 		Like like = Like.createLike(account, post);
 
-		likeRepository.save(like);
-
+		return likeRepository.save(like).getId();
 	}
 
-	public void unLikePost(final String accountId, final long postId) {
+	public Long unLikePost(final String accountId, final long postId) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new NotFoundPostException(postId));
 
@@ -96,13 +94,15 @@ public class PostService {
 			.orElseThrow(() -> new NotFoundAccountException(accountId));
 
 		Like like = likeRepository.findByAccountAndPost(account, post)
-			.orElseThrow(() -> new RuntimeException());
+			.orElseThrow(() -> new NotFoundLikeException(accountId, postId));
 
 		likeRepository.delete(like);
+
+		return postId;
 	}
 
 	@Transactional(readOnly = true)
-	public List<PostResponse> findAllPosts(String accountId, Pageable page) {
+	public List<PostDto> findAllPosts(final String accountId, final Pageable page) {
 		return postRepository.findAllPosts(accountId, page);
 	}
 }

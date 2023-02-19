@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 
-import com.jc.callbustask.dto.response.PostResponse;
+import com.jc.callbustask.dto.response.PostDto;
 
 public interface PostCustomRepository {
 
-	List<PostResponse> findAllPosts(String accountId, Pageable page);
+	List<PostDto> findAllPosts(String accountId, Pageable page);
 }

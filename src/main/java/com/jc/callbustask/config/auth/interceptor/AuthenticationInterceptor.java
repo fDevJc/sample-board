@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.jc.callbustask.config.auth.annotation.Authority;
 import com.jc.callbustask.config.auth.exception.InvalidMemberTypeAccessException;
@@ -26,21 +25,11 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		}
 
 		Authority authority = ((HandlerMethod)handler).getMethodAnnotation(Authority.class);
-		if (authority == null) {
-			return true;
-		}
-
-		if (authenticationStrategy.isCertified(request, authority)) {
-			authenticationStrategy.setContext(request);
+		if (authority == null || authenticationStrategy.isCertified(request, authority)) {
 			return true;
 		}
 
 		throw new InvalidMemberTypeAccessException();
 
-	}
-
-	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		authenticationStrategy.removeContext();
 	}
 }
