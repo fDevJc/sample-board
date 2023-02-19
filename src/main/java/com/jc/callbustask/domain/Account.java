@@ -5,8 +5,12 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import com.jc.callbustask.domain.enums.AccountQuitStatus;
 import com.jc.callbustask.domain.enums.AccountType;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 @Entity
 public class Account extends BaseEntity {
 	private String nickname;
@@ -17,9 +21,21 @@ public class Account extends BaseEntity {
 	@Column(unique = true)
 	private String accountId;
 
-	private String quit;
+	@Enumerated(value = EnumType.STRING)
+	private AccountQuitStatus quit;
 
-	public boolean isMyself(String accountId) {
+	private Account(final String nickname, final AccountType accountType, final String accountId) {
+		this.nickname = nickname;
+		this.accountType = accountType;
+		this.accountId = accountId;
+		this.quit = AccountQuitStatus.ACTIVE;
+	}
+
+	public static Account createAccount(final String nickname, final AccountType accountType, final String accountId) {
+		return new Account(nickname, accountType, accountId);
+	}
+
+	public boolean isMyself(final String accountId) {
 		return this.accountId.equals(accountId);
 	}
 }
