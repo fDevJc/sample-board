@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.jc.callbustask.config.auth.exception.InvalidMemberTypeAccessException;
 import com.jc.callbustask.domain.exception.CannotLessThanZeroException;
+import com.jc.callbustask.service.exception.NotFoundAccountException;
 import com.jc.callbustask.service.exception.NotFoundLikeException;
+import com.jc.callbustask.service.exception.NotFoundPostException;
 import com.jc.callbustask.service.exception.PostAuthorityException;
 import com.jc.callbustask.service.exception.PostLikeCountExceedException;
 
@@ -20,7 +22,7 @@ public class PostControllerAdvice {
 	}
 
 	@ExceptionHandler(PostAuthorityException.class)
-	public ResponseEntity postModificationException(final PostAuthorityException e) {
+	public ResponseEntity postAuthorityException(final PostAuthorityException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 	}
 
@@ -36,6 +38,16 @@ public class PostControllerAdvice {
 
 	@ExceptionHandler(CannotLessThanZeroException.class)
 	public ResponseEntity cannotLessThanZeroException(final CannotLessThanZeroException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	}
+
+	@ExceptionHandler(NotFoundAccountException.class)
+	public ResponseEntity notFoundAccountException(final NotFoundAccountException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	}
+
+	@ExceptionHandler(NotFoundPostException.class)
+	public ResponseEntity notFoundPostException(final NotFoundPostException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 	}
 }

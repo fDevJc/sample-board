@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import com.jc.callbustask.domain.repository.PostCustomRepository;
 import com.jc.callbustask.dto.response.PostDto;
 import com.jc.callbustask.dto.response.QPostDto;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 public class PostCustomRepositoryImpl implements PostCustomRepository {
@@ -32,18 +31,13 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 					account.accountId,
 					account.accountType,
 					post.likeCount,
-					like.id.stringValue()
-				))
+					like.id.stringValue()))
 			.from(post)
 			.join(post.writer, account)
 			.leftJoin(like)
-			.on(post.eq(like.post), eqLikeAccountId(accountId))
+			.on(post.eq(like.post), account.accountId.eq(accountId))
 			.offset(page.getOffset())
 			.limit(page.getPageSize())
 			.fetch();
-	}
-
-	private static BooleanExpression eqLikeAccountId(String accountId) {
-		return account.accountId.eq(accountId);
 	}
 }
