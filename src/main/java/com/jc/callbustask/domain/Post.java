@@ -10,9 +10,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.jc.callbustask.domain.enums.PostStatus;
+import com.jc.callbustask.domain.exception.CannotLessThanZeroException;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @NoArgsConstructor
 @Entity
 public class Post extends BaseEntity {
@@ -28,25 +31,25 @@ public class Post extends BaseEntity {
 	@Enumerated(value = EnumType.STRING)
 	private PostStatus postStatus;
 
-	private int likeCount;
+	private int likeCount = 0;
 
-	private Post(Account writer, String title, String content, PostStatus postStatus) {
+	private Post(final Account writer, final String title, final String content, final PostStatus postStatus) {
 		this.writer = writer;
 		this.title = title;
 		this.content = content;
 		this.postStatus = postStatus;
 	}
 
-	public static Post createPost(Account writer, String title, String content) {
+	public static Post createPost(final Account writer, final String title, final String content) {
 		return new Post(writer, title, content, PostStatus.ACTIVE);
 	}
 
-	public void updatePost(String title, String content) {
+	public void updatePost(final String title, final String content) {
 		this.title = title;
 		this.content = content;
 	}
 
-	public boolean isWriter(String accountId) {
+	public boolean isWriter(final String accountId) {
 		return writer.isMyself(accountId);
 	}
 
@@ -60,6 +63,9 @@ public class Post extends BaseEntity {
 	}
 
 	public void minusLikeCount() {
+		if (likeCount == 0) {
+			throw new CannotLessThanZeroException();
+		}
 		likeCount--;
 	}
 }

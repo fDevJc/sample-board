@@ -20,12 +20,12 @@ public class Like extends BaseEntity {
 	@JoinColumn(name = "post_id")
 	private Post post;
 
-	private Like(Account account, Post post) {
+	private Like(final Account account, final Post post) {
 		this.account = account;
 		this.post = post;
 	}
 
-	public static Like createLike(Account account, Post post) {
+	public static Like createLike(final Account account, final Post post) {
 		return new Like(account, post);
 	}
 }

@@ -2,6 +2,9 @@ package com.jc.callbustask.dto.request;
 
 import javax.validation.constraints.NotNull;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class AddPostRequest {
 	@NotNull
 	private String title;

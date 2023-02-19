@@ -6,18 +6,36 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.jc.callbustask.config.auth.exception.InvalidMemberTypeAccessException;
+import com.jc.callbustask.domain.exception.CannotLessThanZeroException;
+import com.jc.callbustask.service.exception.NotFoundLikeException;
 import com.jc.callbustask.service.exception.PostAuthorityException;
+import com.jc.callbustask.service.exception.PostLikeCountExceedException;
 
 @RestControllerAdvice
 public class PostControllerAdvice {
 
 	@ExceptionHandler(InvalidMemberTypeAccessException.class)
-	public ResponseEntity invalidMemberTypeAccessException(InvalidMemberTypeAccessException e) {
+	public ResponseEntity invalidMemberTypeAccessException(final InvalidMemberTypeAccessException e) {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
 	}
 
 	@ExceptionHandler(PostAuthorityException.class)
-	public ResponseEntity postModificationException(PostAuthorityException e) {
+	public ResponseEntity postModificationException(final PostAuthorityException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	}
+
+	@ExceptionHandler(PostLikeCountExceedException.class)
+	public ResponseEntity postLikeCountExceedException(final PostLikeCountExceedException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	}
+
+	@ExceptionHandler(NotFoundLikeException.class)
+	public ResponseEntity notFoundLikeException(final NotFoundLikeException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+	}
+
+	@ExceptionHandler(CannotLessThanZeroException.class)
+	public ResponseEntity cannotLessThanZeroException(final CannotLessThanZeroException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 	}
 }
