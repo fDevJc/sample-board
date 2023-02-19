@@ -7,6 +7,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 import com.jc.callbustask.domain.enums.PostStatus;
@@ -20,6 +21,8 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Post extends BaseEntity {
 	private String title;
+
+	@Lob
 	private String content;
 
 	@ManyToOne(fetch = FetchType.LAZY)
