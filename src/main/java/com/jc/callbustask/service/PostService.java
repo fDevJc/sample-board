@@ -58,29 +58,39 @@ public class PostService {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new NotFoundPostException(postId));
 
-		if (post.isWriter(accountId)) {
-			post.deletePost();
-			return post.getId();
-		} else {
+		/*
+			가독성 측면에서 부정적 조건문보다 긍정적 조건문을 사용하는게 좋겠다고 생각했는데
+			예외 발생조건이 더 빠르게 눈에 들어오는 방식이 더 좋은거같다는 의견
+		 */
+		// if (post.isWriter(accountId)) {
+		// 	post.deletePost();
+		// 	return post.getId();
+		// } else {
+		// 	throw new PostAuthorityException(accountId);
+		// }
+		if (!post.isWriter(accountId)) {
 			throw new PostAuthorityException(accountId);
 		}
+		post.deletePost();
+		return post.getId();
 	}
 
+
 	public Long likePost(final String accountId, final long postId) {
+		//연관성있는 로직은 모아서 각 로직을 구분한다면 의미와 목적이 명확
+
+		//조회
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new NotFoundPostException(postId));
-
-		post.plusLikeCount();
-
 		Account account = accountRepository.findByAccountId(accountId)
 			.orElseThrow(() -> new NotFoundAccountException(accountId));
-
+		//검증
 		if (likeRepository.findByAccountAndPost(account, post).isPresent()) {
 			throw new PostLikeCountExceedException(accountId, postId);
 		}
-
+		//명령
+		post.plusLikeCount();
 		Like like = Like.createLike(account, post);
-
 		return likeRepository.save(like).getId();
 	}
 
